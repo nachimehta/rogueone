@@ -16,7 +16,7 @@ module.exports.loop = function () {
     if(config.creepTotal > _.size(Game.creeps)){
 
         var body = [WORK, MOVE, MOVE, CARRY, CARRY];
-        if(Game.spawns.Spawn1.canCreateCreep(body) == OK){
+        if(Game.spawns.SF.canCreateCreep(body) == OK){
             for(var role in config.creeps){
                 var creepList = [];
                 for(var name in Game.creeps){
@@ -26,7 +26,7 @@ module.exports.loop = function () {
                 }
 
                 if(creepList.length < config.creeps[role]) {
-                    Game.spawns.Spawn1.createCreep(body, Date.now().toString(), {role: role});
+                    Game.spawns.SF.createCreep(body, Date.now().toString(), {role: role});
                 }
             }
         }
