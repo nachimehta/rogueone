@@ -1,12 +1,3 @@
-/*
- * Module code goes here. Use 'module.exports' to export things:
- * module.exports.thing = 'a thing';
- *
- * You can import it from another modules like this:
- * var mod = require('config');
- * mod.thing == 'a thing'; // true
- */
-
 function getRandomIntInclusive(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -16,8 +7,8 @@ function getRandomIntInclusive(min, max) {
 const NUMBER_OF_EXTENSIONS = 5;
 
 module.exports = {
-    creeps: {"harvester": 2, "upgrader": 1, "builder": 3},
-    creepTotal: 6,
+    creeps: {"harvester": 4, "upgrader": 1, "builder": 5},
+    creepTotal: 10,
     initialize: function(){
         if(Memory.initialized === true) {
             return;
@@ -36,7 +27,7 @@ module.exports = {
             }
 
             //roads to controllers
-            PathFinder.search(spawn.pos, {pos: spawn.room.controller, range:1}, {plainCost:1, swampCost: 1}).path.forEach(function(step){
+            PathFinder.search(spawn.pos, {pos: spawn.room.controller.pos, range:1}, {plainCost:1, swampCost: 1}).path.forEach(function(step){
                 spawn.room.createConstructionSite(step.x, step.y, STRUCTURE_ROAD);
             });
 
@@ -44,8 +35,8 @@ module.exports = {
 
         Memory.initialized = true;
     },
-    createExtensions: function(){
-        if(Memory.createdExtensions === true) {
+    createExtensions: function(room){
+        if(Memory.createdExtensions === true || room.controller.level < 2) {
             return;
         }
 

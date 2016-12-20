@@ -8,15 +8,18 @@ PathFinder.use('true');
 
 module.exports.loop = function () {
 
+    var spawn = Game.spawns.SF;
+    var room = Game.spawns.SF.room;
+
     config.initialize();
-    config.createExtensions();
+    config.createExtensions(room);
 
 
     //creep autospawn
     if(config.creepTotal > _.size(Game.creeps)){
 
-        var body = [WORK, MOVE, MOVE, CARRY, CARRY];
-        if(Game.spawns.SF.canCreateCreep(body) == OK){
+        var body = [WORK, WORK, MOVE, CARRY];
+        if(spawn.canCreateCreep(body) == OK){
             for(var role in config.creeps){
                 var creepList = [];
                 for(var name in Game.creeps){
@@ -26,7 +29,7 @@ module.exports.loop = function () {
                 }
 
                 if(creepList.length < config.creeps[role]) {
-                    Game.spawns.SF.createCreep(body, Date.now().toString(), {role: role});
+                    spawn.createCreep(body, Date.now().toString(), {role: role});
                 }
             }
         }
@@ -60,7 +63,7 @@ module.exports.loop = function () {
         var creep = Game.creeps[name];
 
         if(creep.memory.role == 'harvester') {
-            roleHarvester.run(creep);
+            roleHarvester.run(creep, spawn);
         }
         if(creep.memory.role == 'upgrader') {
             roleUpgrader.run(creep);

@@ -1,8 +1,13 @@
+var roleBuilder = require('role.builder');
 var roleHarvester = {
 
     /** @param {Creep} creep **/
-    run: function(creep) {
-        if(creep.carry.energy < creep.carryCapacity) {
+    run: function(creep, spawn) {
+        if(spawn.energy < spawn.energyCapacity) {
+            creep.memory.state = 'harvesting';
+        }
+
+        if(creep.carry.energy < creep.carryCapacity && creep.memory.state != 'building') {
             var source = creep.pos.findClosestByPath(FIND_SOURCES);
             if(creep.harvest(source) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(source);
@@ -21,7 +26,8 @@ var roleHarvester = {
                     creep.moveTo(targets[0]);
                 }
             } else {
-                creep.moveTo(Game.spawns['SF']);
+                creep.memory.state = 'building';
+                roleBuilder.run(creep);
             }
         }
     }
