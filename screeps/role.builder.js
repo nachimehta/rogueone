@@ -1,3 +1,5 @@
+var roleUpgrader = require('role.upgrader');
+
 var roleBuilder = {
 
     /** @param {Creep} creep **/
@@ -13,10 +15,21 @@ var roleBuilder = {
         }
 
         if(creep.memory.building) {
-            var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
-            var target = creep.room
+            var target = creep.pos.findClosestByPath(FIND_STRUCTURES,{
+                filter: (structure) => structure.hits < structure.hitsMax
+            });
 
-            var target = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
+            if(!target){
+                target = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
+            } else{
+                if(creep.repair(target) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(target);
+                }
+            }
+
+            if(!target){
+                roleUpgrader.run(creep);
+            }
 
             if(target && creep.build(target) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(target);

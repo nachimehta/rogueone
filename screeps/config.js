@@ -7,8 +7,7 @@ function getRandomIntInclusive(min, max) {
 const NUMBER_OF_EXTENSIONS = 5;
 
 module.exports = {
-    creeps: {"harvester": 4, "upgrader": 1, "builder": 5},
-    creepTotal: 10,
+    creeps: {"harvester": 3, "upgrader": 2, "builder": 2},
     initialize: function(){
         if(Memory.initialized === true) {
             return;
@@ -50,5 +49,6 @@ module.exports = {
                 Memory.createdExtensions = true;
             }
         }
-    }
+    },
+    allies: ['smohyee']
 };
