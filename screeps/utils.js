@@ -2,30 +2,98 @@ var config = require('config');
 
 module.exports = {
 
+
     autospawnCreeps: function(spawn){
-        let creepTotal = Object.keys(config.creeps).reduce(function(previous, key){
-            return previous + config.creeps[key];
-        }, 0);
+        this.autospawnHarvesters(spawn);
+        this.autospawnRunners(spawn);
+        this.autospawnBuilders(spawn);
+        this.autospawnUpgraders(spawn);
+    },
 
-        if(creepTotal > _.size(Game.creeps)){
+    autospawnHarvesters: function(spawn){
+        var harvesters = _(Game.creeps).filter({ memory: { role: 'harvester' }}).value();
+        var body = [WORK, WORK, WORK, WORK, WORK, WORK, MOVE, MOVE, CARRY];
 
-            let body = [WORK, WORK, WORK, WORK, MOVE, CARRY, CARRY, MOVE, MOVE, CARRY, MOVE, CARRY];
-            if(spawn.canCreateCreep(body) == OK){
-                for(let role in config.creeps){
-                    let creepList = [];
-                    for(let name in Game.creeps){
-                        if(Game.creeps[name].memory.role == role) {
-                            creepList.push(Game.creeps[name]);
-                        }
-                    }
+        //return if we have enough
+        if(harvesters.length >= config.creeps["harvester"]){
+            return;
+        }
 
-                    if(creepList.length < config.creeps[role]) {
-                        spawn.createCreep(body, null, {role: role});
-                    }
-                }
+        var sources = spawn.room.find(FIND_SOURCES);
+
+        //if we have no harvesters, spawn one with whichever source
+        if(harvesters.length === 0){
+            console.log("I want to create a harvester attached to source#" + sources[0].id)
+            spawn.createCreep(body, null, {role: "harvester", sourceId: sources[0].id});
+            return;
+        }
+
+        //if we have one, find the source it needs to be assigned to
+        for(var source in sources){
+            if(harvesters[0].memory.sourceId != sources[source].id){
+                console.log("I want to create a harvester attached to source#" + sources[source].id)
+                spawn.createCreep(body, null, {role: "harvester", sourceId: sources[source].id});
+                break;
             }
         }
     },
+
+
+    autospawnRunners: function(spawn){
+        var runners = _(Game.creeps).filter({memory: {role: 'runner'}}).value();
+        var body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY];
+
+        //return if we have enough
+        if(runners.length >= config.creeps["runner"]){
+            return;
+        }
+
+        var containers = spawn.room.find(FIND_STRUCTURES, {filter: (s) => s.structureType == STRUCTURE_CONTAINER});
+
+        //if we have no runners, spawn one with whichever container
+        if(runners.length === 0){
+            console.log("I want to create a runner attached to container#" + containers[0].id)
+            spawn.createCreep(body, null, {role: "runner", containerId: containers[0].id});
+            return;
+        }
+
+        for(var container in containers){
+            if(runners[0].memory.containerId != containers[container].id){
+                console.log("I want to create a runner attached to container#" + containers[container].id)
+                spawn.createCreep(body, null, {role: "runner", containerId: containers[container].id});
+                break;
+            }
+        }
+    },
+
+
+    autospawnBuilders: function(spawn){
+        var builders = _(Game.creeps).filter({memory: {role: 'builder'}}).value();
+        var body = [WORK, WORK, WORK, WORK, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY];
+
+        //return if we have enough
+        if(builders.length >= config.creeps['builder']){
+            return;
+        }
+
+        console.log("I want to create a builder");
+        spawn.createCreep(body, null, {role: "builder"});
+    },
+
+
+    autospawnUpgraders: function(spawn){
+        var builders = _(Game.creeps).filter({memory: {role: 'upgrader'}}).value();
+        var body = [WORK, WORK, WORK, WORK, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY];
+
+        //return if we have enough
+        if(builders.length >= config.creeps['upgrader']){
+            return;
+        }
+
+        console.log("I want to create an upgrader");
+        spawn.createCreep(body, null, {role: "upgrader"});
+    },
+
 
     clearCreepMemory: function() {
         for(let i in Memory.creeps) {

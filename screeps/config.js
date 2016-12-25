@@ -7,7 +7,7 @@ function getRandomIntInclusive(min, max) {
 const NUMBER_OF_EXTENSIONS = 5;
 
 module.exports = {
-    creeps: {"harvester": 3, "upgrader": 2, "builder": 2},
+    creeps: {"runner": 2, "upgrader": 2, "builder": 1, "harvester": 2},
     initialize: function(){
         if(Memory.initialized === true) {
             return;

@@ -15,8 +15,19 @@ var roleBuilder = {
         }
 
         if(creep.memory.building) {
+            /*
+            //if walls, build walls first
+            var wall = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES, {
+                filter: (s) => s.structureType == "constructedWall"
+            });
+
+            if(wall && creep.build(wall) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(wall);
+                return;
+            }*/
+
             var target = creep.pos.findClosestByPath(FIND_STRUCTURES,{
-                filter: (structure) => structure.hits < structure.hitsMax
+                filter: (structure) => structure.hits < structure.hitsMax && structure.hits < 15000
             });
 
             if(!target){
@@ -36,7 +47,7 @@ var roleBuilder = {
             }
         }
         else {
-            var source = creep.pos.findClosestByPath(FIND_SOURCES);
+            var source = creep.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
             if(creep.harvest(source) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(source);
             }

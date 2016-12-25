@@ -1,41 +1,32 @@
-var roleBuilder = require('role.builder');
 var roleHarvester = {
 
     /** @param {Creep} creep
-        @param {Spawn} spawn
+        @param {Source} source
     **/
-    run: function(creep, spawn) {
-        var targets = creep.room.find(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return (structure.structureType == STRUCTURE_EXTENSION ||
-                                structure.structureType == STRUCTURE_SPAWN ||
-                                structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
-                    }
-            });
+    run: function(creep) {
 
-        if(targets.length <= 0 ) {
-            roleBuilder.run(creep);
+        var source = Game.getObjectById(creep.memory.sourceId);
+        if(!creep.memory.sourceId){
             return;
         }
+        //move to source
+        if(!creep.memory.path){
+            creep.memory.path = creep.pos.findPathTo(source.pos.x, source.pos.y);
+        }
 
-        if(creep.memory.state == "harvesting") {
-            var source = creep.pos.findClosestByPath(FIND_SOURCES);
-            if(creep.harvest(source) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(source);
-            }
-
-            if(creep.carryCapacity == creep.carry.energy){
-                creep.memory.state = "depositing energy";
+        if(creep.harvest(source) == ERR_NOT_IN_RANGE){
+            if(creep.moveByPath(creep.memory.path) == ERR_NOT_FOUND){
+                creep.memory.path = null;
             }
         }
-        else {
-            if(creep.transfer(targets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(targets[0]);
-            } if(creep.carry.energy == 0) {
-                creep.memory.state = "harvesting";
-            }
-        }
+
+        let containers = creep.pos.findInRange(FIND_STRUCTURES, 1, {
+            filter: (s) => s.structureType == STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] < s.storeCapacity
+        });
+
+        creep.transfer(containers[0], RESOURCE_ENERGY);
     }
+
 };
 
 module.exports = roleHarvester;
