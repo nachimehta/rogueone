@@ -41,7 +41,7 @@ module.exports = {
 
     autospawnRunners: function(spawn){
         var runners = _(Game.creeps).filter({memory: {role: 'runner'}}).value();
-        var body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY];
+        var body = [MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY];
 
         //return if we have enough
         if(runners.length >= config.creeps["runner"]){
@@ -69,7 +69,7 @@ module.exports = {
 
     autospawnBuilders: function(spawn){
         var builders = _(Game.creeps).filter({memory: {role: 'builder'}}).value();
-        var body = [WORK, WORK, WORK, WORK, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY];
+        var body = [WORK, WORK, WORK, WORK, WORK, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY];
 
         //return if we have enough
         if(builders.length >= config.creeps['builder']){
@@ -83,7 +83,7 @@ module.exports = {
 
     autospawnUpgraders: function(spawn){
         var builders = _(Game.creeps).filter({memory: {role: 'upgrader'}}).value();
-        var body = [WORK, WORK, WORK, WORK, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY];
+        var body = [WORK, WORK, WORK, WORK, WORK, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY];
 
         //return if we have enough
         if(builders.length >= config.creeps['upgrader']){

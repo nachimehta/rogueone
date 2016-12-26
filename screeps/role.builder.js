@@ -27,7 +27,7 @@ var roleBuilder = {
             }*/
 
             var target = creep.pos.findClosestByPath(FIND_STRUCTURES,{
-                filter: (structure) => structure.hits < structure.hitsMax && structure.hits < 15000
+                filter: (structure) => structure.hits < structure.hitsMax && structure.hits < 25000
             });
 
             if(!target){
@@ -47,9 +47,16 @@ var roleBuilder = {
             }
         }
         else {
-            var source = creep.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
-            if(creep.harvest(source) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(source);
+            let storage = Game.getObjectById(Memory.storageId);
+            if(storage.store > 300){
+                if(creep.withdraw(storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(storage);
+                }
+            } else{
+                var source = creep.pos.findClosestByPath(FIND_DROPPED_ENERGY);
+                if(creep.pickup(source) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(source);
+                }
             }
         }
     }

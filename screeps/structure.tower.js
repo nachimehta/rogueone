@@ -12,6 +12,7 @@ module.exports = {
                 if(hostiles[i].getActiveBodyparts(ATTACK) > 0 ||
                     hostiles[i].getActiveBodyparts(RANGED_ATTACK) > 0){
                     hostileOfChoice = hostiles[i];
+                    break;
                 }
             }
         }
@@ -21,7 +22,7 @@ module.exports = {
         } else {
 
             let closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
-                filter: (structure) => structure.hits < structure.hitsMax && structure.hits < 15000
+                filter: (structure) => structure.hits < structure.hitsMax && structure.hits < 25000
             });
 
             if(closestDamagedStructure) {
