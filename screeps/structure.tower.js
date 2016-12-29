@@ -19,10 +19,10 @@ module.exports = {
 
         if(hostileOfChoice) {
             tower.attack(hostileOfChoice);
-        } else {
+        } else if(!Memory.needToSpawn && tower.energy > tower.energyCapacity * 0.6){
 
             let closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
-                filter: (structure) => structure.hits < structure.hitsMax && structure.hits < 25000
+                filter: (structure) => structure.hits < structure.hitsMax && structure.hits < 50000
             });
 
             if(closestDamagedStructure) {

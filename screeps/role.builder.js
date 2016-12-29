@@ -15,24 +15,28 @@ var roleBuilder = {
         }
 
         if(creep.memory.building) {
-            /*
+
             //if walls, build walls first
             var wall = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES, {
-                filter: (s) => s.structureType == "constructedWall"
+                filter: (s) => s.structureType == "constructedWall" || s.structureType == "rampart"
             });
 
             if(wall && creep.build(wall) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(wall);
                 return;
-            }*/
+            }
+
+
 
             var target = creep.pos.findClosestByPath(FIND_STRUCTURES,{
-                filter: (structure) => structure.hits < structure.hitsMax && structure.hits < 25000
+                filter: (structure) => structure.hits < structure.hitsMax && structure.hits < 75000
             });
 
             if(!target){
                 target = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
-            } else{
+            }
+
+            if(target){
                 if(creep.repair(target) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(target);
                 }
@@ -48,16 +52,17 @@ var roleBuilder = {
         }
         else {
             let storage = Game.getObjectById(Memory.storageId);
-            if(storage.store > 300){
-                if(creep.withdraw(storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(storage);
-                }
-            } else{
+            /*
+            if(creep.room.find(FIND_DROPPED_ENERGY).length != 0){
                 var source = creep.pos.findClosestByPath(FIND_DROPPED_ENERGY);
                 if(creep.pickup(source) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(source);
                 }
-            }
+            } else {*/
+                if(creep.withdraw(storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(storage);
+                }
+            //}
         }
     }
 };

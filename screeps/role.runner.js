@@ -1,19 +1,57 @@
 var roleRunner = {
 
     /** @param {Creep} creep
-        @param {Spawn} spawn
     **/
-    run: function(creep, spawn) {
+    run: function(creep) {
         if(creep.memory.state == "harvesting") {
 
             let container = Game.getObjectById(creep.memory.containerId);
 
+            if(creep.memory.pos && (creep.memory.pos.x == creep.pos.x && creep.memory.pos.y == creep.pos.y)) {
+                creep.memory.waitTicks = creep.memory.waitTicks + 1;
+            } else {
+                creep.memory.pos = creep.pos;
+                creep.memory.waitTicks = 0;
+            }
+
+            var ignoreCreeps = true;
+
+            if(creep.memory.waitTicks >= 5) {
+                ignoreCreeps = false;
+                delete creep.memory.path;
+            }
+
+            if(!creep.memory.path){
+                creep.memory.path = creep.pos.findPathTo(container.pos, {ignoreCreeps: ignoreCreeps});
+            }
+
+            var droppedEnergy = container.pos.findInRange(FIND_DROPPED_ENERGY, 1);
+
+            if(droppedEnergy.length){
+                if(creep.pickup(droppedEnergy[0]) != OK) {
+                    if(creep.moveByPath(creep.memory.path) == ERR_NOT_FOUND){
+                        creep.memory.path = creep.pos.findPathTo(container.pos, {ignoreCreeps: ignoreCreeps});
+                    }
+                }
+
+                if(creep.carry.energy == creep.carryCapacity) {
+                    creep.memory.state = "depositing energy";
+                    creep.say("depositing");
+                }
+
+                return;
+            }
+
             if(creep.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(container);
+                if(creep.moveByPath(creep.memory.path) == ERR_NOT_FOUND){
+                    creep.memory.path = creep.pos.findPathTo(container.pos, {ignoreCreeps: ignoreCreeps});
+                }
             }
 
             if(creep.carryCapacity == creep.carry.energy){
                 creep.memory.state = "depositing energy";
+                creep.say("depositing");
+                delete creep.memory.path;
             }
         } else {
 
@@ -36,6 +74,7 @@ var roleRunner = {
 
             if(creep.carry.energy == 0) {
                 creep.memory.state = "harvesting";
+                creep.say("harvesting");
                 delete creep.memory.targetIds;
             }
         }
@@ -48,7 +87,7 @@ var roleRunner = {
             filter: (structure) => {
                 return (structure.structureType == STRUCTURE_EXTENSION ||
                         structure.structureType == STRUCTURE_SPAWN ||
-                        (structure.structureType == STRUCTURE_TOWER && structure.energy < structure.energyCapacity * 0.9))
+                        (structure.structureType == STRUCTURE_TOWER && structure.energy < structure.energyCapacity * 0.9 && !Memory.needToSpawn))
                         && structure.energy < structure.energyCapacity;
             }
         });
@@ -72,6 +111,7 @@ var roleRunner = {
 
         if(creep.carry.energy == 0) {
             creep.memory.state = "harvesting";
+            creep.say("harvesting");
             delete creep.memory.targetIds;
         }
     }
